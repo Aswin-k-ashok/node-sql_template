@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 5000
 const ticktRouter = require('./routes/ticketRoutes')
 
 app.use(express.json())
@@ -20,5 +20,5 @@ app.use((err,req,res,next)=>{
 });
 
 app.listen(port, () => {
-  console.log('Server is running on port 3000')
+  console.log(`app listening at http://localhost:${port}`)
 })
