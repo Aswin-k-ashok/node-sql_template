@@ -31,6 +31,7 @@ router.post('/',async function(req,res,next){
 })
 
 router.get('/:id',async function(req,res,next){
+    console.log(req)
     console.log(req.params.id);
     try{
         console.log(await tickets.getOneTicket(req.params.id));
@@ -46,9 +47,21 @@ router.get('/:id',async function(req,res,next){
 router.patch('/:id',async function(req,res,next){
     const ticketDataFromBody = req.body;
     try{
-        tickets.updateTicket(req.params.id,ticketDataFromBody);
+     await tickets.updateTicket(req.params.id,ticketDataFromBody);
     }catch(err){
         console.error(err)
+    }
+})
+
+router.post('/filterTicket/:filter', async function(req,res,next){
+   const key = req.params.filter
+   const value = req.body.value
+   console.log(key)
+   console.log(value)
+    try{
+        await tickets.viewTicketBasedOn(key,value);
+    }catch(err){
+        console.log(err)
     }
 })
 
