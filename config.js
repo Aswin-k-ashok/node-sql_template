@@ -3,9 +3,11 @@ const config = {
         host: 'localhost',
         user:'root',
         password:'password',
-        database:'ticket_db'
+        database:'service_desk'
     },
     listPerPage: 10,
 };
+
+
 
 module.exports = config;

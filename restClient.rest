@@ -1,0 +1,13 @@
+POST http://localhost:5000/tickets
+Content-Type: : application/json
+
+{
+    "ticket_number":"st209495348",
+    "ticket_summary":"complete this ticket asap",
+    "ticket_priority: 5 ,
+    "ticket_board":"3",
+     sla_status, 
+     work_type,
+    notes,
+     note_type, contract_and_agreement, billable
+}
