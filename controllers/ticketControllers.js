@@ -31,9 +31,87 @@ async function newTicket (ticket_data){
     const sqlQuery = `INSERT INTO service_desk.ticket (board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
     const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id])
+
     const newTicket = helper.emptyOrRows(row)
 
     return newTicket
+}
+
+//@desc : update ticket 
+async function updateTicket(ticket_id,ticket_data){
+    let {board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id} = ticket_data
+
+    let existingTicket = await getTicket(ticket_id)
+
+    existingTicket = existingTicket[0]
+
+    if(board == existingTicket.board || board ==null || board == undefined){
+        board = existingTicket.board
+    }
+    if(status == existingTicket.status || status ==null || status == undefined){
+        status = existingTicket.status
+    }
+    if(priority == existingTicket.priority || priority ==null || priority == undefined){
+        priority = existingTicket.priority
+    }
+    if(sla_status == existingTicket.sla_status || sla_status ==null || sla_status == undefined){
+        sla_status = existingTicket.sla_status
+    }
+    if(work_type == existingTicket.work_type || work_type ==null || work_type == undefined){
+        work_type = existingTicket.work_type
+    }
+    if(contract_and_agreement == existingTicket.contract_and_agreement || contract_and_agreement ==null || contract_and_agreement == undefined){
+        contract_and_agreement = existingTicket.contract_and_agreement
+    }
+    if(ticket_type == existingTicket.ticket_type || ticket_type ==null || ticket_type == undefined){
+        ticket_type = existingTicket.ticket_type
+    }
+    if(owner == existingTicket.owner || owner ==null || owner == undefined){
+        owner = existingTicket.owner
+    }
+    if(summary == existingTicket.summary || summary ==null || summary == undefined){
+        summary = existingTicket.summary
+    }
+    if(notes == existingTicket.notes || notes ==null || notes == undefined){
+        notes = existingTicket.notes
+    }
+    if(ticket_extra_data == existingTicket.ticket_extra_data || ticket_extra_data ==null || ticket_extra_data == undefined){
+        ticket_extra_data = existingTicket.ticket_extra_data
+    }
+    if(billable == existingTicket.billable || billable ==null || billable == undefined){
+        billable = existingTicket.billable
+    }
+    if(tags == existingTicket.tags || tags ==null || tags == undefined){
+        tags = existingTicket.tags
+    }
+    if(budgeted_hours == existingTicket.budgeted_hours || budgeted_hours ==null || budgeted_hours == undefined){
+        budgeted_hours = existingTicket.budgeted_hours
+    }
+    if(actual_hours == existingTicket.actual_hours || actual_hours ==null || actual_hours == undefined){
+        actual_hours = existingTicket.actual_hours
+    }
+    if(duration == existingTicket.duration || duration ==null || duration == undefined){
+        duration = existingTicket.duration
+    }
+    if(source == existingTicket.source || source ==null || source == undefined){
+        source = existingTicket.source
+    }
+    if(has_parent == existingTicket.has_parent || has_parent ==null || has_parent == undefined){
+        has_parent = existingTicket.has_parent
+    }
+    if(parent_id == existingTicket.parent_id || parent_id ==null || parent_id == undefined){
+        parent_id = existingTicket.parent_id
+    }
+
+    const sqlQuery = `UPDATE ticket SET board=?,status=?,priority=?,sla_status=?,work_type=?,contract_and_agreement=?,ticket_type=?,owner=?,summary=?,notes=?,ticket_extra_data=?,billable=?,tags=?,budgeted_hours=?,actual_hours=?,duration=?,source=?,has_parent=?,parent_id=? WHERE ticket_id=?`
+
+    
+
+    const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id,ticket_id])
+
+    const updatedTicket = helper.emptyOrRows(row)
+
+    return updatedTicket
 }
 
 //@ desc : accept a ticket
@@ -166,4 +244,4 @@ async function mongoTest(data){
         return result
 }
 
-module.exports = {getAllTickets,getTicket,newTicket,mongoTest}
+module.exports = {getAllTickets,getTicket,newTicket,updateTicket,mongoTest}

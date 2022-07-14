@@ -31,6 +31,17 @@ router.get('/:id',async function(req,res,next){
     }
 })
 
+router.patch('/:id',async function(req,res,next){
+    const ticket_data= req.body
+    const ticket_id = req.params.id
+    try{
+        res.json(await tickets.updateTicket(ticket_id,ticket_data))
+    }catch(err){
+        console.error('error in patch ticket',err);
+        next(err)
+    }
+})
+
 router.post('/mongo',async function(req,res,next){
     try{
         res.json(await tickets.mongoTest(req.body))
