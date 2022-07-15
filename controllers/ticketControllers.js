@@ -115,21 +115,44 @@ async function updateTicket(ticket_id,ticket_data){
     if(parent_id == existingTicket.parent_id || parent_id ==null || parent_id == undefined){
         parent_id = existingTicket.parent_id
     }
-
-    const sqlQuery = `UPDATE ticket SET board=?,status=?,priority=?,sla_status=?,work_type=?,contract_and_agreement=?,ticket_type=?,owner=?,summary=?,notes=?,ticket_extra_data=?,billable=?,tags=?,budgeted_hours=?,actual_hours=?,duration=?,source=?,has_parent=?,parent_id=? WHERE ticket_id=?`
-
     
-
+    const sqlQuery = `UPDATE ticket SET board=?,status=?,priority=?,sla_status=?,work_type=?,contract_and_agreement=?,ticket_type=?,owner=?,summary=?,notes=?,ticket_extra_data=?,billable=?,tags=?,budgeted_hours=?,actual_hours=?,duration=?,source=?,has_parent=?,parent_id=? WHERE ticket_id=?`
+    
+    
+    
     const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id,ticket_id])
-
+    
     const updatedTicket = helper.emptyOrRows(row)
-
+    
     return updatedTicket
 }
 
 //@ desc : accept a ticket
-async function acceptTicket(){
+async function acceptTicket(){   
+}
+//@ desc : add additional details 
+async function additionalDetails (){  
+}
+//@ desc : forward / escalate a ticket
+async function forwardEscalateTicket(){
+}
+//@ desc : merge ticket
+async function mergeTicket(){
+    const sqlQuery=``
+}
 
+//@ desc : attribute create
+async function attributeCreate(){
+    const sqlQuery=``
+}
+
+//@ desc : link existing ticket
+async function linkExistingTicket(parent_ticket_id,child_ticket_id){
+    const sqlQuery=`UPDATE ticket SET has_parent=?,parent_id=? WHERE ticket_id=?`
+    const row = await db.query(sqlQuery,[true,parent_ticket_id,child_ticket_id])
+    const updatedTicket = helper.emptyOrRows(row)
+
+    return updatedTicket
 }
 
 //@ desc : view ticket based on board
@@ -142,25 +165,19 @@ async function replyTicket(){
     const sqlQuery = ``
 }
 
-//@ desc : add additional details 
-async function additionalDetails (){
-
-}
-
-//@ desc : forward / escalate a ticket
-async function forwardEscalateTicket(){
-}
-
-//@ desc : merge ticket
-async function mergeTicket(){
-    const sqlQuery=``
-}
 
 //@ desc : view ticket based on filters
 async function viewTicketBasedOnFilter(filter,filterType){
-    const sqlQuery=`SELECT * FROM ticket WHERE ${filter}=${filterType}`
+    
+    const sqlQuery=`SELECT 
+    ticket_id,summary,notes,billable,tags,budgeted_hours,actual_hours,duration,board_name,status_name,priority_name,sla_status_name,owner_name,ticket_type_name,work_type_name 
+    FROM ticket 
+    INNER JOIN (board,status,priority,sla_status,owner,ticket_type,work_type)
+    ON (board.board_id = ticket.board and status.status_id = ticket.status and priority.priority_id = ticket.priority and sla_status.sla_status_id = ticket.sla_status and owner.owner_id = ticket.owner and ticket_type.ticket_type_id = ticket.ticket_type and work_type.work_type_id = ticket.work_type) WHERE ${filter}=${filterType}`
+
     const ticket = await db.query(sqlQuery)
-    return ticket
+    const ticketList = helper.emptyOrRows(ticket)
+    return ticketList
 }
 
 //@ desc : updating tickets in bulk
@@ -168,19 +185,9 @@ async function updatingTicketsInBulk(ticket_id){
     const sqlQuery=`SELECT * FROM TICKET WHERE `
 }
 
-//@ desc : link existing ticket
-async function linkExistingTicket(parent_ticket_id,child_ticket_id){
-    const sqlQuery=``
-}
-
 //@ desc : new child ticket
 async function newChildTicket(){
-    const sqlQuery = ``
-}
-
-//@ desc : attribute create
-async function attributeCreate(){
-    const sqlQuery=``
+   
 }
 
 //@ desc : attribute read 
