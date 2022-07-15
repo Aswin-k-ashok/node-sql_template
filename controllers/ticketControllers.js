@@ -7,7 +7,12 @@ const mdb = require('../services/mongodb')
 //@ desc : get all tickets and request
 
 async function getAllTickets (){
-    const row = await db.query('select * from ticket')
+    const sqlQuery = `SELECT 
+    ticket_id,summary,notes,billable,tags,budgeted_hours,actual_hours,duration,board_name,status_name,priority_name,sla_status_name,owner_name,ticket_type_name,work_type_name 
+    FROM ticket 
+    INNER JOIN (board,status,priority,sla_status,owner,ticket_type,work_type)
+    ON (board.board_id = ticket.board and status.status_id = ticket.status and priority.priority_id = ticket.priority and sla_status.sla_status_id = ticket.sla_status and owner.owner_id = ticket.owner and ticket_type.ticket_type_id = ticket.ticket_type and work_type.work_type_id = ticket.work_type);`
+    const row = await db.query(sqlQuery)
     const tickets = helper.emptyOrRows(row)
     return tickets
 }
@@ -15,7 +20,12 @@ async function getAllTickets (){
 //@ desc : view a ticket
 
 async function getTicket (ticket_id){
-    const sqlQuery = `SELECT * FROM ticket WHERE ticket_id=${ticket_id}`
+    //const sqlQuery = `SELECT * FROM ticket WHERE ticket_id=${ticket_id}`
+    const sqlQuery = `SELECT 
+    ticket_id,summary,notes,billable,tags,budgeted_hours,actual_hours,duration,board_name,status_name,priority_name,sla_status_name,owner_name,ticket_type_name,work_type_name 
+    FROM ticket 
+    INNER JOIN (board,status,priority,sla_status,owner,ticket_type,work_type)
+    ON (board.board_id = ticket.board and status.status_id = ticket.status and priority.priority_id = ticket.priority and sla_status.sla_status_id = ticket.sla_status and owner.owner_id = ticket.owner and ticket_type.ticket_type_id = ticket.ticket_type and work_type.work_type_id = ticket.work_type) WHERE ticket_id=${ticket_id};`
     const row = await db.query(sqlQuery)
     const ticket = helper.emptyOrRows(row)
     return ticket
@@ -26,11 +36,13 @@ async function newTicket (ticket_data){
     
     const {board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id} = ticket_data
     
-    console.log(board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id)
+    const ticketThread = await mdb.get().collection('ticket').insertOne({event:"new ticket created",ticketNotes:notes})
     
+    const ticketThread_id = ticketThread.insertedId.toString()
+
     const sqlQuery = `INSERT INTO service_desk.ticket (board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-    const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id])
+    const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,ticketThread_id,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id])
 
     const newTicket = helper.emptyOrRows(row)
 
@@ -40,6 +52,7 @@ async function newTicket (ticket_data){
 //@desc : update ticket 
 async function updateTicket(ticket_id,ticket_data){
     let {board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id} = ticket_data
+
 
     let existingTicket = await getTicket(ticket_id)
 
@@ -240,7 +253,9 @@ async function removeTicketFromQueue(){
 ///////////////////////////////////
 
 async function mongoTest(data){        
-        const result = await mdb.get().collection('ticket').insertOne(data)
+        const ticketThread = await mdb.get().collection('ticket').insertOne({event:"new ticket created"})
+        console.log(ticketThread.insertedId.toString())
+
         return result
 }
 
