@@ -43,4 +43,4 @@ async function deleteWorkType(work_type_id){
     return row
 }
 
-module.exports = { }
+module.exports = {createNewWorkType,viewWorkTypes,editWorkType,deleteWorkType }

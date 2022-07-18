@@ -43,4 +43,4 @@ async function deleteStatus(status_id){
     return row
 }
 
-module.exports = { }
+module.exports = {createNewStatus,viewStatuses,editStatus,deleteStatus} 

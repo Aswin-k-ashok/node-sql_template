@@ -59,4 +59,6 @@ async function deleteAContract_and_agreement(contract_and_agreement_id){
 
 
 
-module.exports = { }
+
+
+module.exports = {contract_and_agreementCreate,contract_and_agreementView,viewAContract_and_agreement,editAContract_and_agreement,deleteAContract_and_agreement} 

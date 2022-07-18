@@ -44,4 +44,4 @@ async function deletePriority(priority_id){
 
 
 
-module.exports = { }
+module.exports = {createNewPriority,viewPriorities,editPriority,deletePriority }

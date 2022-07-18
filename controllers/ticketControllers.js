@@ -128,7 +128,12 @@ async function updateTicket(ticket_id,ticket_data){
 }
 
 //@ desc : accept a ticket
-async function acceptTicket(){   
+async function acceptTicket(ticket_id){
+    const sqlQuery = `UPDATE ticket SET status=? WHERE ticket_id=?`
+    
+    const row = await db.query(sqlQuery,[3,ticket_id])
+    const acceptedTicket = helper.emptyOrRows(row)
+    return acceptedTicket
 }
 //@ desc : add additional details 
 async function additionalDetails (){  
@@ -186,8 +191,19 @@ async function updatingTicketsInBulk(ticket_id){
 }
 
 //@ desc : new child ticket
-async function newChildTicket(){
-   
+async function newChildTicket(parent_id,ticket_data){
+
+    let {board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent} = ticket_data
+    
+    has_parent = true
+
+    const sqlQuery = `INSERT INTO service_desk.ticket (board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+
+    const row = await db.query(sqlQuery,[board,status,priority,sla_status,work_type,contract_and_agreement,ticket_type,owner,summary,notes,ticket_extra_data,billable,tags,budgeted_hours,actual_hours,duration,source,has_parent,parent_id])
+
+    const newChildTicket = helper.emptyOrRows(row)
+
+    return newChildTicket
 }
 
 //@ desc : attribute read 
@@ -266,4 +282,4 @@ async function mongoTest(data){
         return result
 }
 
-module.exports = {getAllTickets,getTicket,newTicket,updateTicket,mongoTest}
+module.exports = {getAllTickets,getTicket,newTicket,updateTicket,linkExistingTicket,viewTicketBasedOnFilter,newChildTicket,mongoTest}

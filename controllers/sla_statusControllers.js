@@ -46,4 +46,4 @@ async function deleteSlaStatus(sla_status_id){
 
 
 
-module.exports = { }
+module.exports = { createNewSlaStatus,viewSlaStatuses,editSlaStatus,deleteSlaStatus }

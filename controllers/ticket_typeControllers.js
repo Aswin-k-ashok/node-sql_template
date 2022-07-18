@@ -44,4 +44,4 @@ async function deleteTicketType(ticket_type_id){
 }
 
 
-module.exports = { }
+module.exports = { createNewTicketType,viewTicketTypes,editTicketType,deleteTicketType }
