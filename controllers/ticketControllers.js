@@ -2,7 +2,12 @@ const db = require('../services/db')
 const helper = require('../helper')
 const config = require('../config')
 const mdb = require('../services/mongodb')
-
+const fs = require('fs')
+const util = require('util')
+const multer = require('multer')
+const upload = multer({dest:"uploads/"})
+const {uploadFile,getFileStream} = require('../services/s3')
+const res = require('express/lib/response')
 
 //@ desc : get all tickets and request
 
@@ -167,7 +172,11 @@ async function viewTicketBasedOnBoard(ticket_board){
 
 //@ desc : reply a ticket by adding notes
 async function replyTicket(){
-    const sqlQuery = ``
+    const sqlQuery = `SELECT `
+    const thread_id = await db.query()
+    const mongoQuery = `{_id:${thread_id}},{$set:{ticket_note:${newNote}}}`
+    const notes = await mdb.get().collection('ticket').update(mongoQuery)
+    return notes
 }
 
 
@@ -204,6 +213,31 @@ async function newChildTicket(parent_id,ticket_data){
     const newChildTicket = helper.emptyOrRows(row)
 
     return newChildTicket
+}
+
+//@ desc : add a new attachmet
+async function newAttachment(file, ticket_id) {
+    const sqlQuery = "INSERT INTO attachments (attachment_url) VALUES (?)"
+    const sqlQueryForExtraData = 'INSERT INTO ticket_extra_data (attachment_id,ticket_id) VALUES (?,?)'
+    const result = await uploadFile(file)
+
+    const row = await db.query(sqlQuery, [result.Key])
+    const extraDataRow = await db.query(sqlQueryForExtraData,[row.insertId,ticket_id])
+    console.log(row.insertId,extraDataRow.insertId)
+
+    let resultHandler = function (err) {
+        if (err) {
+            console.log("file not deleted")
+        } else {
+            console.log("file deleted")
+        }
+    }
+
+
+    fs.unlink(file.path, resultHandler);
+
+    return {message:"file uploaded successfully",result:result}
+
 }
 
 //@ desc : attribute read 
@@ -282,4 +316,4 @@ async function mongoTest(data){
         return result
 }
 
-module.exports = {getAllTickets,getTicket,newTicket,updateTicket,linkExistingTicket,viewTicketBasedOnFilter,newChildTicket,mongoTest}
+module.exports = {getAllTickets,getTicket,newTicket,updateTicket,linkExistingTicket,viewTicketBasedOnFilter,newChildTicket,mongoTest,newAttachment}

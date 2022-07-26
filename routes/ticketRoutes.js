@@ -1,7 +1,9 @@
 const express = require ('express');
 const router = express.Router();
+const multer = require('multer')
 // const tickets = require('../services/tickets');
 const tickets = require('../controllers/ticketControllers')
+const upload = multer({dest:"uploads/"})
 
 //@desc : get all tickets
 router.get('/',async function(req,res,next){
@@ -95,6 +97,18 @@ router.post('/mongo',async function(req,res,next){
     }catch(err){
         console.log(err)
         next(err)
+    }
+})
+
+//@desc : add a new attachment
+
+router.post('/images/:id', upload.single("image"), async (req, res) => {
+    const file = req.file
+    const ticket_id = req.params.id
+    try {
+        res.json(await tickets.newAttachment(file,ticket_id))
+    } catch (err) {
+        console.error(err)
     }
 })
 
